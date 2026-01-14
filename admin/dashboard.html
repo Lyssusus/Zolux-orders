@@ -195,7 +195,7 @@
         formData.append('path', fileName);
 // Konwertuj plik do base64
       const reader = new FileReader();
-      reader.onload = async function() {
+      reader.onload = function() {
         const base64File = reader.result;
         const uploadResponse = await fetch('/api/admin/upload', {
           method: 'POST',
