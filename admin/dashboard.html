@@ -195,38 +195,45 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('bucket', 'product-images');
         formData.append('path', fileName);
 // Konwertuj plik do base64
-      const reader = new FileReader();
-    reader.onload = async function() {        const base64File = reader.result;
-        const uploadResponse = await fetch('/api/admin/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            file: base64File,
-            fileName: fileName,
-            bucket: 'product-images'
-          })
-        });
-        if (!uploadResponse.ok) throw new Error('Błąd wgrywania obrazu');
-        const uploadData = await uploadResponse.json();
-        const image_url = uploadData.url;
-
-        // Save product to database
-        const response = await fetch('/api/admin/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, price, price_discounted, description, image_url })
-        });
-
-        if (response.ok) {
-          alert('Produkt zapisany pomyślnie!');
-          closeModal();
-          loadProducts();
-        } else {
-          const error = await response.json();
-          alert('Błąd: ' + (error.error || 'Nie udało się zapisać produktu'));
-}
-              }
+const base64File = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = () => reject(reader.error);
               reader.readAsDataURL(imageFile);
+            });
+
+            const fileName = Date.now() + '-' + imageFile.name;
+            const uploadResponse = await fetch('/api/admin/upload', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                file: base64File,
+                fileName: fileName,
+                bucket: 'product-images'
+              })
+            });
+
+            if (!uploadResponse.ok) throw new Error('Błąd wgrywania obrazu');
+            
+            const uploadData = await uploadResponse.json();
+            const image_url = uploadData.url;
+
+            const response = await fetch('/api/admin/products', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name, price, price_discounted, description, image_url
+              })
+            });
+
+            if (response.ok) {
+              alert('Produkt zapisany pomyślnie!');
+              closeModal();
+              loadProducts();
+            } else {
+              const error = await response.json();
+              alert('Błąd: ' + (error.error || 'Nie udało się zapisać produktu'));
+            }
 
       } catch (error) {
         alert('Błąd: ' + error.message);
