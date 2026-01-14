@@ -193,12 +193,19 @@
         formData.append('file', imageFile);
         formData.append('bucket', 'product-images');
         formData.append('path', fileName);
-
+// Konwertuj plik do base64
+      const reader = new FileReader();
+      reader.onload = async function() {
+        const base64File = reader.result;
         const uploadResponse = await fetch('/api/admin/upload', {
           method: 'POST',
-          body: formData
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            file: base64File,
+            fileName: fileName,
+            bucket: 'product-images'
+          })
         });
-
         if (!uploadResponse.ok) throw new Error('Błąd wgrywania obrazu');
         const uploadData = await uploadResponse.json();
         const image_url = uploadData.url;
@@ -217,7 +224,9 @@
         } else {
           const error = await response.json();
           alert('Błąd: ' + (error.error || 'Nie udało się zapisać produktu'));
-        }
+}
+      reader.readAsDataURL(imageFile);
+              }
       } catch (error) {
         alert('Błąd: ' + error.message);
       }
