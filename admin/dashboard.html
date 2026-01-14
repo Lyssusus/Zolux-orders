@@ -55,7 +55,6 @@
         <button onclick="logout()">Wyloguj</button>
       </div>
     </div>
-    
     <div class="main">
       <div id="products" class="section">
         <div class="header">
@@ -64,20 +63,18 @@
         </div>
         <div class="products-grid" id="productsList"></div>
       </div>
-      
       <div id="orders" class="section" style="display:none;">
         <h2>Zamówienia</h2>
-        <div id="ordersList" style="background:white; padding:20px; border-radius:8px;"></div>
+        <div id="ordersList"></div>
       </div>
-      
       <div id="settings" class="section" style="display:none;">
         <h2>Ustawienia</h2>
-        <div style="background:white; padding:20px; border-radius:8px;">Ustawienia administratora</div>
+        <p>Ustawienia administratora</p>
       </div>
     </div>
   </div>
-  
-  <div class="modal" id="productModal">
+
+  <div id="productModal" class="modal">
     <div class="modal-content">
       <h3 id="modalTitle">Dodaj nowy produkt</h3>
       <form id="productForm">
@@ -112,14 +109,14 @@
   <script>
     const SUPABASE_URL = 'https://nxgwktdkewmcujneader.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54Z3drdGRrZXdtY3VqbmVhZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQwMDEyNDIsImV4cCI6MjA0OTU3NzI0Mn0.7L3w00E-12Q5G7j-F4hm5RGvXNBhEwRMBKfO4gGi1Vk';
-    
+
     let editingId = null;
-    
+
     function checkAuth() {
       const token = localStorage.getItem('adminToken');
       if (!token) window.location.href = '/admin/login.html';
     }
-    
+
     async function loadProducts() {
       try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*`, {
@@ -131,7 +128,7 @@
         console.error('Błąd przy ładowaniu produktów:', error);
       }
     }
-    
+
     function displayProducts(products) {
       const list = document.getElementById('productsList');
       list.innerHTML = products.map(p => `
@@ -150,115 +147,115 @@
         </div>
       `).join('');
     }
-    
+
     function showSection(name) {
       document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
       document.getElementById(name).style.display = 'block';
       if (name === 'orders') loadOrders();
     }
-    
+
     function openAddProductModal() {
       editingId = null;
       document.getElementById('modalTitle').textContent = 'Dodaj nowy produkt';
       document.getElementById('productForm').reset();
       document.getElementById('productModal').classList.add('show');
     }
-    
+
     function closeModal() {
       document.getElementById('productModal').classList.remove('show');
     }
-    
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('productForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      await saveProduct();
+
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('productForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await saveProduct();
+      });
+
+      async function saveProduct() {
+        console.log('saveProduct called');
+        const name = document.getElementById('productName').value;
+        const price = parseFloat(document.getElementById('productPrice').value);
+        const price_discounted = parseFloat(document.getElementById('productPriceDiscounted').value);
+        const description = document.getElementById('productDescription').value;
+        const imageFile = document.getElementById('productImage').files[0];
+
+        if (!name || !price || !price_discounted || !imageFile) {
+          alert('Wypełnij wszystkie pola');
+          return;
+        }
+
+        try {
+          // Convert file to base64 using Promise
+          const base64File = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(imageFile);
+          });
+
+          const fileName = Date.now() + '-' + imageFile.name;
+
+          // Upload to Supabase
+          const uploadResponse = await fetch('/api/admin/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file: base64File,
+              fileName: fileName,
+              bucket: 'product-images'
+            })
+          });
+
+          if (!uploadResponse.ok) throw new Error('Błąd wgrywania obrazu');
+          
+          const uploadData = await uploadResponse.json();
+          const image_url = uploadData.url;
+
+          // Save product to database
+          const response = await fetch('/api/admin/products', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name, price, price_discounted, description, image_url
+            })
+          });
+
+          if (response.ok) {
+            alert('Produkt zapisany pomyślnie!');
+            closeModal();
+            loadProducts();
+          } else {
+            const error = await response.json();
+            alert('Błąd: ' + (error.error || 'Nie udało się zapisać produktu'));
+          }
+        } catch (error) {
+          alert('Błąd: ' + error.message);
+        }
+      }
+
+      async function deleteProduct(id) {
+        if (confirm('Czy na pewno chcesz usuąć ten produkt?')) {
+          alert('Funkcja usuwania produktów - wymaga backend API');
+        }
+      }
+
+      async function loadOrders() {
+        document.getElementById('ordersList').innerHTML = '<p>Funkcja zamówień - w przygotowaniu</p>';
+      }
+
+      function editProduct(id) {
+        alert('Edycja produktu ' + id + ' - w przygotowaniu');
+      }
+
+      function logout() {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        window.location.href = '/admin/login.html';
+      }
+
+      checkAuth();
+      loadProducts();
     });
-    
-  async function saveProduct() {      // Implementation for saving products to Supabase
-      console.log('saveProduct called');
-      const name = document.getElementById('productName').value;
-      const price = parseFloat(document.getElementById('productPrice').value);
-      const price_discounted = parseFloat(document.getElementById('productPriceDiscounted').value);
-      const description = document.getElementById('productDescription').value;
-      const imageFile = document.getElementById('productImage').files[0];
-
-      if (!name || !price || !price_discounted || !imageFile) {
-        alert('Wypełnij wszystkie pola');
-        return;
-      }
-
-      try {
-        // Upload image to Supabase Storage
-        const fileName = Date.now() + '-' + imageFile.name;
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result);
-              reader.onerror = () => reject(reader.error);
-              reader.readAsDataURL(imageFile);
-            });
-
-            const uploadResponse = await fetch('/api/admin/upload', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                file: base64File,
-                fileName: fileName,
-                bucket: 'product-images'
-              })
-            });
-
-            if (!uploadResponse.ok) throw new Error('Błąd wgrywania obrazu');
-            
-            const uploadData = await uploadResponse.json();
-            const image_url = uploadData.url;
-
-            const response = await fetch('/api/admin/products', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                name, price, price_discounted, description, image_url
-              })
-            });
-
-            if (response.ok) {
-              alert('Produkt zapisany pomyślnie!');
-              closeModal();
-              loadProducts();
-            } else {
-              const error = await response.json();
-              alert('Błąd: ' + (error.error || 'Nie udało się zapisać produktu'));
-            }
-
-      } catch (error) {
-        alert('Błąd: ' + error.message);
-      }
-    }
-    
-    async function deleteProduct(id) {
-      if (confirm('Czy na pewno chcesz usuąć ten produkt?')) {
-        // Implementation for deleting products
-        alert('Funkcja usuwania produktów - wymaga backend API');
-      }
-    }
-    
-    async function loadOrders() {
-      // Implementation for loading orders
-      document.getElementById('ordersList').innerHTML = '<p>Funkcja zamówień - w przygotowaniu</p>';
-    }
-    
-    function editProduct(id) {
-      alert('Edycja produktu ' + id + ' - w przygotowaniu');
-    }
-    
-    function logout() {
-      localStorage.removeItem('adminToken');
-      localStorage.removeItem('adminUser');
-      window.location.href = '/admin/login.html';
-    }
-    
-    checkAuth();
-    loadProducts();
-  });
   </script>
 </body>
 </html>
-184
