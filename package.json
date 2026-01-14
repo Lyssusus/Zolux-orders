@@ -1,0 +1,8 @@
+{
+  "name": "zolux-orders",
+  "version": "1.0.0",
+  "description": "System zamówień online Zolux",
+  "dependencies": {
+    "resend": "^3.1.0"
+  }
+}
