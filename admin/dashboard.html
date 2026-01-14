@@ -168,6 +168,7 @@
       document.getElementById('productModal').classList.remove('show');
     }
     
+document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('productForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       await saveProduct();
@@ -256,6 +257,7 @@
     
     checkAuth();
     loadProducts();
+  });
   </script>
 </body>
 </html>
