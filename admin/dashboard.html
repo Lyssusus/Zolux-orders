@@ -190,19 +190,12 @@ document.addEventListener('DOMContentLoaded', function() {
       try {
         // Upload image to Supabase Storage
         const fileName = Date.now() + '-' + imageFile.name;
-        const formData = new FormData();
-        formData.append('file', imageFile);
-        formData.append('bucket', 'product-images');
-        formData.append('path', fileName);
-// Konwertuj plik do base64
-const base64File = await new Promise((resolve, reject) => {
               const reader = new FileReader();
               reader.onload = () => resolve(reader.result);
               reader.onerror = () => reject(reader.error);
               reader.readAsDataURL(imageFile);
             });
 
-            const fileName = Date.now() + '-' + imageFile.name;
             const uploadResponse = await fetch('/api/admin/upload', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
