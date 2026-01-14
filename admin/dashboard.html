@@ -173,9 +173,7 @@
       await saveProduct();
     });
     
-    176
-    () {
-      // Implementation for saving products to Supabase
+  async function saveProduct() {      // Implementation for saving products to Supabase
       const name = document.getElementById('productName').value;
       const price = parseFloat(document.getElementById('productPrice').value);
       const price_discounted = parseFloat(document.getElementById('productPriceDiscounted').value);
