@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js';
-import busboy from 'busboy';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -12,58 +11,42 @@ export default async function handler(req, res) {
   }
 
   try {
-    const bb = busboy({ headers: req.headers });
-    let file = null;
-    let bucket = 'product-images';
-    let path = null;
+    const { file, fileName, bucket } = req.body;
 
-    // Parse form data
-    bb.on('file', (fieldname, stream, info) => {
-      if (fieldname === 'file') {
-        const chunks = [];
-        stream.on('data', (data) => chunks.push(data));
-        stream.on('end', () => {
-          file = Buffer.concat(chunks);
-        });
-      }
-    });
-
-    bb.on('field', (fieldname, val) => {
-      if (fieldname === 'path') path = val;
-      if (fieldname === 'bucket') bucket = val;
-    });
-
-    // Wait for form to be parsed
-    await new Promise((resolve, reject) => {
-      bb.on('close', resolve);
-      bb.on('error', reject);
-    });
-
-    if (!file || !path) {
-      return res.status(400).json({ error: 'Missing file or path' });
+    if (!file || !fileName || !bucket) {
+      return res.status(400).json({ error: 'Missing file, fileName, or bucket' });
     }
+
+    // Convert base64 to buffer - handle both data:image/jpeg;base64, and plain base64
+    let base64Data = file;
+    if (file.includes('base64,')) {
+      base64Data = file.split('base64,')[1];
+    }
+
+    const buffer = Buffer.from(base64Data, 'base64');
 
     // Upload to Supabase Storage
     const { data, error } = await supabase.storage
       .from(bucket)
-      .upload(path, file, {
+      .upload(fileName, buffer, {
         contentType: 'image/jpeg',
-        upsert: false
+        upsert: true
       });
 
     if (error) {
       console.error('Supabase upload error:', error);
-      throw new Error(`Upload to Supabase failed: ${error.message}`);
+      throw new Error(error.message);
     }
 
-    // Generate public URL
+    // Get public URL
     const { data: publicUrl } = supabase.storage
       .from(bucket)
-      .getPublicUrl(path);
+      .getPublicUrl(fileName);
 
     return res.status(200).json({
       success: true,
-      url: publicUrl.publicUrl
+      url: publicUrl.publicUrl,
+      path: fileName
     });
   } catch (error) {
     console.error('Upload error:', error);
