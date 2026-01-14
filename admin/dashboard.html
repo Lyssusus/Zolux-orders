@@ -173,7 +173,8 @@
       await saveProduct();
     });
     
-    async function saveProduct() {
+    176
+    () {
       // Implementation for saving products to Supabase
       const name = document.getElementById('productName').value;
       const price = parseFloat(document.getElementById('productPrice').value);
@@ -224,8 +225,9 @@
           const error = await response.json();
           alert('Błąd: ' + (error.error || 'Nie udało się zapisać produktu'));
 }
-      reader.readAsDataURL(imageFile);
               }
+              reader.readAsDataURL(imageFile);
+
       } catch (error) {
         alert('Błąd: ' + error.message);
       }
