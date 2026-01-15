@@ -107,8 +107,8 @@
   </div>
 
   <script>
-    const SUPABASE_URL = 'https://nxgwktdkewmcujneader.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54Z3drdGRrZXdtY3VqbmVhZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQwMDEyNDIsImV4cCI6MjA0OTU3NzI0Mn0.7L3w00E-12Q5G7j-F4hm5RGvXNBhEwRMBKfO4gGi1Vk';
+// Usunięto hardkodowany klucz - frontend nie powinno mieć dostępu do kluczy API. Wszystkie żądania do Supabase idą przez backend API (/api/admin/...)
+    // const SUPABASE_KEY usunięty - NIGDY nie przechowuj tajnych kluczy w frontend! API keys powinny być tylko na serwerze.
 
     let editingId = null;
 
@@ -119,9 +119,7 @@
 
     async function loadProducts() {
       try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/products?select=*`, {
-          headers: { 'apikey': SUPABASE_KEY }
-        });
+        const response = await fetch('/api/admin/products');
         const products = await response.json();
         displayProducts(products);
       } catch (error) {
