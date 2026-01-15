@@ -3,8 +3,8 @@ const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
 
-const supabaseUrl = 'https://nxgwktdkewmcujneader.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54Z3drdGRrZXdtY3VqbmVhZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQwMDEyNDIsImV4cCI6MjA0OTU3NzI0Mn0.7L3w00E-12Q5G7j-F4hm5RGvXNBhEwRMBKfO4gGi1Vk';
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
