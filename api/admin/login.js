@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -8,9 +10,9 @@ export default function handler(req, res) {
   // Hardcoded credentials for now
   // In production, use Supabase Auth or similar
   const adminCredentials = {
-    username: 'marketing@zolux.pl',
-    password: 'FAfrwifn3185'
-  };
+  username: process.env.ADMIN_USERNAME,
+  password: process.env.ADMIN_PASSWORD
+}
 
   if (username === adminCredentials.username && password === adminCredentials.password) {
     // In production, generate a proper JWT token
