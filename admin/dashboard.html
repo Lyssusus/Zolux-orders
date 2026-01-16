@@ -134,8 +134,8 @@
           ${p.image_url ? `<img src="${p.image_url}" class="product-img">` : '<div class="product-img"></div>'}
           <div class="product-name">${p.name}</div>
           <div class="product-prices">
-            <div>Cena przed: ${p.price} zł</div>
-            <div>Cena po: ${p.price_discounted} zł</div>
+            <div>Cena przed: ${p.price_before} zł</div>
+            <div>Cena po: ${p.price_after} zł</div>
           </div>
           <div class="product-descriptions">${p.description || ''}</div>
           <div class="product-actions">
