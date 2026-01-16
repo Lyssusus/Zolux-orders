@@ -136,8 +136,7 @@
           const data = await response.json();
           PRODUCTS = data.map(p => ({
             id: p.id,
-            name: p.name,
-            description: p.description || '',
+          const response = await fetch('/api/products');            description: p.description || '',
             priceBefore: p.price_before || p.price,
             priceAfter: p.price_after || p.price_discounted,
             imageUrl: p.image_url
