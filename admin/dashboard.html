@@ -172,13 +172,12 @@
       async function saveProduct() {
         console.log('saveProduct called');
         const name = document.getElementById('productName').value;
-        const price = parseFloat(document.getElementById('productPrice').value);
         const price_after = parseFloat(document.getElementById('productPriceDiscounted').value);
         const imageFile = document.getElementById('productImage').files[0];
-price_before
         if (!name || !price_before || !price_after || !imageFile) {
           alert('Wypełnij wszystkie pola');
           return;
+                  const price_before = parseFloat(document.getElementById('productPrice').value);
         }
 
         try {
