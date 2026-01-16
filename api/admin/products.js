@@ -21,11 +21,11 @@ module.exports = async function handler(req, res) {
   } else if (req.method === 'POST') {
     // Create new product
     try {
-      const { name, price, price_discounted, description, image_url } = req.body;
+      const { name, price_before, price_after, image_url } = req.body;
       
       const { data, error } = await supabase
         .from('products')
-        .insert([{ name, price, price_discounted, description, image_url }])
+        .insert([{ name, price_before, price_after, image_url }])
         .select();
       
       if (error) throw error;
@@ -36,11 +36,11 @@ module.exports = async function handler(req, res) {
   } else if (req.method === 'PUT') {
     // Update product
     try {
-      const { id, name, price, price_discounted, description, image_url } = req.body;
+      const { id, name, price, price_after, description, image_url } = req.body;
       
       const { data, error } = await supabase
         .from('products')
-        .update({ name, price, price_discounted, description, image_url })
+        .update({ name, price, price_after, description, image_url })
         .eq('id', id)
         .select();
       
