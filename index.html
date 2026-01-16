@@ -129,9 +129,65 @@
         const PRODUCTS = [/* Produkty tu */];
         let selectedProduct = null;
 
+              // Load products from API
+      async function loadProducts() {
+        try {
+          const response = await fetch('/api/admin/products');
+          const data = await response.json();
+          PRODUCTS = data.map(p => ({
+            id: p.id,
+            name: p.name,
+            description: p.description || '',
+            priceBefore: p.price_before || p.price,
+            priceAfter: p.price_after || p.price_discounted,
+            imageUrl: p.image_url
+          }));
+          displayProducts();
+        } catch (error) {
+          console.error('Błąd ładowania produktów:', error);
+        }
+      }
+
+      function displayProducts() {
+        const container = document.querySelector('.content .main');
+        const existingSection = document.querySelector('.products-section');
+        if (existingSection) existingSection.remove();
+        
+        const productsHtml = `
+          <div class="form-section products-section">
+            <h3>🛒 Wybierz produkt</h3>
+            <div class="products-grid">
+              ${PRODUCTS.map(p => `
+                <div class="product-card" data-id="${p.id}" onclick="selectProduct(${p.id})">
+                  ${p.imageUrl ? `<img src="${p.imageUrl}" class="product-image" />` : ''}
+                  <div class="product-info">
+                    <div class="product-name">${p.name}</div>
+                    <div class="product-desc">${p.description}</div>
+                    <div class="product-prices">
+                      <span class="price-before">${p.priceBefore} zł</span>
+                      <span class="price-after">${p.priceAfter} zł</span>
+                    </div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('afterbegin', productsHtml);
+      }
+
+      function selectProduct(id) {
+        selectedProduct = PRODUCTS.find(p => p.id === id);
+        document.querySelectorAll('.product-card').forEach(card => card.classList.remove('selected'));
+        document.querySelector(`[data-id="${id}"]`).classList.add('selected');
+        updateSummary();
+      }
+
+      // Load products on page load
+      loadProducts();
+
         document.getElementById('order-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!selectedProduct) {
+      let PRODUCTS = [];            if (!selectedProduct) {
                 alert('Wybierz produkt!');
                 return;
             }
