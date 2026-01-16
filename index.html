@@ -185,8 +185,11 @@
       loadProducts();
 
         document.getElementById('order-form').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    if (!selectedProduct) {
                 alert('Wybierz produkt!');
                 return;
+                                }
             }
             const formData = new FormData(document.getElementById('order-form'));
             const data = {
