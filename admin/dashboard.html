@@ -169,7 +169,7 @@
         await saveProduct();
       });
 
-      async function saveProduct() {
+      window.saveProduct = async function() {
         console.log('saveProduct called');
         const name = document.getElementById('productName').value;
             const price_before = parseFloat(document.getElementById('productPrice').value);
