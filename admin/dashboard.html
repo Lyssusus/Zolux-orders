@@ -213,7 +213,7 @@ const fileName = Date.now() + '-' + imageFile.name;
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              name, price, price_discounted, description, image_url
+              name, price_before, price_after, image_url
             })
           });
 
