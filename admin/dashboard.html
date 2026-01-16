@@ -173,11 +173,10 @@
         console.log('saveProduct called');
         const name = document.getElementById('productName').value;
         const price = parseFloat(document.getElementById('productPrice').value);
-        const price_discounted = parseFloat(document.getElementById('productPriceDiscounted').value);
-        const description = document.getElementById('productDescription').value;
+        const price_after = parseFloat(document.getElementById('productPriceDiscounted').value);
         const imageFile = document.getElementById('productImage').files[0];
-
-        if (!name || !price || !price_discounted || !imageFile) {
+price_before
+        if (!name || !price_before || !price_after || !imageFile) {
           alert('Wypełnij wszystkie pola');
           return;
         }
