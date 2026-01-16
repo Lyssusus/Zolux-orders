@@ -148,8 +148,7 @@
       }
 
       function displayProducts() {
-        const container = document.querySelector('.content .main');
-        const existingSection = document.querySelector('.products-section');
+        const container = document.querySelector('.main');        const existingSection = document.querySelector('.products-section');
         if (existingSection) existingSection.remove();
         
         const productsHtml = `
@@ -172,8 +171,7 @@
             </div>
           </div>
         `;
-        container.insertAdjacentHTML('afterbegin', productsHtml);
-      }
+        container.insertAdjacentHTML('beforeend', productsHtml);      }
 
       function selectProduct(id) {
         selectedProduct = PRODUCTS.find(p => p.id === id);
