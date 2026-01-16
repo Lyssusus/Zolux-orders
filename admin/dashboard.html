@@ -191,7 +191,6 @@
             reader.readAsDataURL(imageFile);
           });
 
-          174
 const fileName = Date.now() + '-' + imageFile.name;
           // Upload to Supabase
           const uploadResponse = await fetch('/api/admin/upload', {
