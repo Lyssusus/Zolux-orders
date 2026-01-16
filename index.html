@@ -132,11 +132,12 @@
               // Load products from API
       async function loadProducts() {
         try {
-          const response = await fetch('/api/admin/products');
+          const response = await fetch('/api/products');
           const data = await response.json();
           PRODUCTS = data.map(p => ({
             id: p.id,
-          const response = await fetch('/api/products');            description: p.description || '',
+                name: p.name,
+                              description: p.description || '',
             priceBefore: p.price_before || p.price,
             priceAfter: p.price_after || p.price_discounted,
             imageUrl: p.image_url
